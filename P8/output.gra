@@ -1,0 +1,32 @@
+3
+a
+b
+c
+8
+A
+B
+D1
+D2
+D3
+S
+X
+Y
+18
+A a
+B b
+D1 BX
+D2 XD1
+D3 XB
+S AD2
+S AD1
+S AD3
+S AB
+X AY
+X BY
+X a
+X b
+Y AY
+Y BY
+Y a
+Y b
+Y c

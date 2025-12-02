@@ -1,0 +1,3 @@
+{& , a , aa , aab , aabb , aabbb , aabbba }
+{& , 2 , 21 , 213 , 2134 , 21342 }
+{& , h , ho , hol , hola }

@@ -16,9 +16,9 @@ El objetivo es conectar una serie de puntos con la mínima cantidad de "cable". 
     b. Si no lo están se agrupan y se utiliza la conexión
 - Se repite hasta que todos los puntos estén en el mismo grupo
 
-## Explicación Archivo po Archivo
+## Explicación Archivo por Archivo
 
-### point_types.hpp
+### 1. point_types.hpp
 
 Este archivo no hace nada por sí mismo, es un diccionario. Define cómo vamos a llamar a las cosas para no perdernos.
 
@@ -30,7 +30,7 @@ Este archivo no hace nada por sí mismo, es un diccionario. Define cómo vamos a
 
 **sub_tree:** Un conjunto de puntos y arcos ya conectados.
 
-### sub_tree.hpp y .cpp
+### 2. sub_tree.hpp y .cpp
 
 Esta clase representa un componente conexo.
 
@@ -44,7 +44,7 @@ El método clave **merge** (fusionar): Imagina que tienes dos islas (dos sub_tre
 
 Ahora el árbol actual es más grande y contiene todo lo que tenía el otro.
 
-### point_set.hpp y .cpp 
+### 3. point_set.hpp y .cpp 
 Aquí es donde ocurre el algoritmo de Kruskal.
 
 **compute_arc_vector (Preparación):**
@@ -75,7 +75,7 @@ Llama al merge de la clase sub_tree (la isla i se come a la isla j).
 
 Borra la isla j del bosque (st.erase), porque ya no existe como entidad independiente; ahora es parte de i.
 
-### main.cpp
+### 4. main.cpp
 Es la interfaz con el usuario.
 
 Entrada: Usa los operadores >> sobrecargados para leer los puntos limpiamente desde la consola o un archivo.

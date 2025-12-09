@@ -44,11 +44,14 @@ std::istream& operator>>(std::istream& is, CyA::point& p) {
 int main(int argc, char* argv[]) {
   CyA::point_vector points;
   bool output_dot = false;
+  std::string arc_file = "";
 
   // Procesar argumentos
   for (int i = 1; i < argc; ++i) {
     if (strcmp(argv[i], "-d") == 0) {
       output_dot = true;
+    } else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc) {
+      arc_file = argv[++i];
     }
   }
 
@@ -57,7 +60,12 @@ int main(int argc, char* argv[]) {
 
   // Crear el conjunto y ejecutar EMST
   EMST::point_set ps(points);
-  ps.EMST();
+  
+  if (!arc_file.empty()) {
+    ps.EMST_from_file(arc_file);
+  } else {
+    ps.EMST();
+  }
 
   // Salida estándar
   ps.write_tree(std::cout);

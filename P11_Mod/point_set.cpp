@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 #include <iomanip>
 
 namespace EMST {
@@ -15,6 +16,40 @@ namespace EMST {
     CyA::arc_vector av;
     // 1. Calcular todos los posibles arcos y sus costes, y ordenarlos
     compute_arc_vector(av);
+
+    forest st;
+
+    // 2. Inicializar el bosque: cada punto es un árbol independiente
+    for (const CyA::point& p : *this) {
+      sub_tree s;
+      s.add_point(p);
+      st.push_back(s);
+    }
+
+    // 3. Iterar sobre los arcos ordenados (Voraz)
+    for (const CyA::weigthed_arc& a : av) {
+      int i, j;
+      // Buscar a qué sub-árboles pertenecen los puntos del arco
+      find_incident_subtrees(st, a.second, i, j);
+
+      // Si pertenecen a árboles distintos, fusionarlos (evita ciclos)
+      if (i != j) {
+        merge_subtrees(st, a.second, i, j);
+      }
+    }
+
+    // Al final, el bosque debería tener un solo componente (el MST)
+    if (!st.empty()) {
+      emst_ = st[0].get_arcs();
+      cost_ = st[0].get_cost();
+    }
+  }
+
+  // Lógica principal de Kruskal con aristas del fichero
+  void point_set::EMST_from_file(const std::string& filename) {
+    CyA::arc_vector av;
+    // 1. Leer aristas desde el fichero y calcular sus costes, ordenarlas
+    read_arc_vector_from_file(filename, av);
 
     forest st;
 
@@ -62,7 +97,35 @@ namespace EMST {
     std::sort(av.begin(), av.end());
   }
 
-  void point_set::find_incident_subtrees(const forest& st, const CyA::arc& a, int& i, int& j) const {
+  // Modificacion
+  void point_set::read_arc_vector_from_file(const std::string& filename, CyA::arc_vector& av) const {
+    av.clear();
+    std::ifstream file(filename);
+    
+    if (!file.is_open()) {
+      std::cerr << "Error: No se pudo abrir el fichero " << filename << std::endl;
+      return;
+    }
+
+    double x1, y1, x2, y2;
+    while (file >> x1 >> y1 >> x2 >> y2) {
+      CyA::point p1 = std::make_pair(x1, y1);
+      CyA::point p2 = std::make_pair(x2, y2);
+      CyA::arc arc = std::make_pair(p1, p2);
+      double dist = euclidean_distance(arc);
+      
+      // Guardamos: (coste, arco)
+      av.push_back(std::make_pair(dist, arc));
+    }
+
+    file.close();
+    
+    // Ordenamos por peso (requisito Greedy)
+    std::sort(av.begin(), av.end());
+  }
+
+  void point_set::find_incident_subtrees(const forest& st, const CyA::arc& a, int& i,
+                                         int& j) const {
     i = -1;
     j = -1;
 
@@ -122,7 +185,6 @@ namespace EMST {
 
     // Dibujar aristas
     // Estrategia robusta: Recorrer el árbol y escribir los arcos
-
     for (const auto& arc : emst_) {
       os << "  \"" << arc.first.first << "," << arc.first.second << "\" -- \"" << arc.second.first
          << "," << arc.second.second << "\";" << std::endl;
